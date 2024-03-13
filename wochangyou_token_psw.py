@@ -25,7 +25,7 @@
 变量名：ChinaUnicomParam_chatStr    格式：appid和token_online之间的拼接符号，默认使用#
 变量名：ChinaUnicomParam_appidIndex    格式：1或者2  拼接appid是在token_online前面还是后面，1代表前面，2代表后面,默认appid在前面
 沃畅游参数
-变量名：IsWoChangYouCK  格式：True或者False 是否生成沃畅游的access_token参数填入环境变量，默认True生成填入
+变量名：IsWoChangYouCK  格式：True或者False 是否生成沃畅游的access_token参数填入环境变量，默认False不生成填入
 
 wxpusher推送(非必填)
 青龙变量：WoChangYouCK_WXPUSHER_TOKEN   wxpusher推送的token
@@ -370,7 +370,7 @@ if WoChangYouCK_WXPUSHER_TOPIC_ID_temp != "" and len(WoChangYouCK_WXPUSHER_TOPIC
 msg = ""
 isDebugger = False
 
-# 是否生成沃畅游access_token参数提交至青龙环境，默认True生成，需要不生成请填入False
+# 是否生成沃畅游access_token参数提交至青龙环境，默认False不生成，需要生成请填入True
 IsWoChangYouCK = False
 IsWoChangYouCK_temp = get_cookie("IsWoChangYouCK")
 if IsWoChangYouCK_temp != "" and len(IsWoChangYouCK_temp)>0:
