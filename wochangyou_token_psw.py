@@ -4,14 +4,29 @@
 # @Author : github@yuanter https://github.com/yuanter  by院长
 # @Time : 2023/9/6 16:45
 # cron "3 0 * * *" script-path=xxx.py,tag=匹配cron用
-# const $ = new Env('沃畅游密码登录');
+# const $ = new Env('联通和沃畅游密码登录');
 # -------------------------------
 
 """
-说明：首次使用，联通app首页--5g新通信--联通畅游，点击个人中心，手动登录一遍
 
-沃畅游密码登录 获取access_token环境并自动新增或者更新青龙环境
+说明： 自动获取联通token_online、appid、ecs_token和access_token参数
+
+注意：若是需要沃畅游的access_token参数，在首次使用时，联通app首页--5g新通信--联通畅游，点击个人中心，手动登录一遍
+
 青龙环境变量：WoChangYouCK_PSW 手机号码&密码  账号和密码分别是联通app的账号和密码
+
+
+下列变量都可选填，请按照自己的需求自行添加环境变量
+联通app参数
+变量名：IsChinaUnicomParam  格式：True或者False 是否生成token_online参数填入环境变量，是下面变量起作用的前提，默认False不生成填入
+变量名：ChinaUnicomEnvName  格式：填指定生成的环境变量名，如chinaUnicomCookie，本脚本默认生成chinaUnicomCookie，用于生成跑拉菲(leaf)联通脚本运行  
+变量名：ChinaUnicomParam_chatMoreStr    格式：生成的多账号使用的拼接连接符，默认使用&
+变量名：ChinaUnicomParam_flag    格式：是否拼接appid，默认False不拼接，需要拼接请填入True
+变量名：ChinaUnicomParam_chatStr    格式：appid和token_online之间的拼接符号，默认使用#
+变量名：ChinaUnicomParam_appidIndex    格式：1或者2  拼接appid是在token_online前面还是后面，1代表前面，2代表后面,默认appid在前面
+沃畅游参数
+变量名：IsWoChangYouCK  格式：True或者False 是否生成沃畅游的access_token参数填入环境变量，默认True生成填入
+
 wxpusher推送(非必填)
 青龙变量：WoChangYouCK_WXPUSHER_TOKEN   wxpusher推送的token
 青龙变量：WoChangYouCK_WXPUSHER_TOPIC_ID   wxpusher推送的topicId(主题ID，非UID)
@@ -133,8 +148,8 @@ def get_cookie_data(name):
             # ck_list.append(ck.get('value'))
             # 直接添加CK
             ck_list.append(ck)
-    if len(ck_list) < 1:
-        print('变量{}共配置{}条CK,请添加环境变量,或查看环境变量状态'.format(name,len(ck_list)))
+    # if len(ck_list) < 1:
+    #     print('变量{}共配置{}条CK,请添加环境变量,或查看环境变量状态'.format(name,len(ck_list)))
     return ck_list
 
 # 修改print方法 避免某些环境下python执行print 不会去刷新缓存区导致信息第一时间不及时输出
@@ -355,6 +370,51 @@ if WoChangYouCK_WXPUSHER_TOPIC_ID_temp != "" and len(WoChangYouCK_WXPUSHER_TOPIC
 msg = ""
 isDebugger = False
 
+# 是否生成沃畅游access_token参数提交至青龙环境，默认True生成，需要不生成请填入False
+IsWoChangYouCK = True
+IsWoChangYouCK_temp = get_cookie("IsWoChangYouCK")
+if IsWoChangYouCK_temp != "" and len(IsWoChangYouCK_temp)>0:
+    IsWoChangYouCKStr = IsWoChangYouCK_temp[0]["value"]
+    if IsWoChangYouCKStr == "False":
+        IsWoChangYouCK = False
+
+# 是否生成联通app参数提交至青龙环境，默认False不生成，需要生成请填入True
+IsChinaUnicomParam = False
+IsChinaUnicomParam_temp = get_cookie("IsChinaUnicomParam")
+if IsChinaUnicomParam_temp != "" and len(IsChinaUnicomParam_temp)>0:
+    IsChinaUnicomParamStr = IsChinaUnicomParam_temp[0]["value"]
+    if IsChinaUnicomParamStr == "True":
+        IsChinaUnicomParam = True
+# 生成token后添加到指定环境变量
+envName = "chinaUnicomCookie"
+ChinaUnicomEnvName_temp = get_cookie("ChinaUnicomEnvName")
+if ChinaUnicomEnvName_temp != "" and len(ChinaUnicomEnvName_temp)>0:
+    envName = ChinaUnicomEnvName_temp[0]["value"]
+# 生成的多账号使用的拼接连接符，默认使用&
+chatMoreStr = "&"
+ChinaUnicomParam_chatMoreStr_temp = get_cookie("ChinaUnicomParam_chatMoreStr")
+if ChinaUnicomParam_chatMoreStr_temp != "" and len(ChinaUnicomParam_chatMoreStr_temp)>0:
+    chatMoreStr = ChinaUnicomParam_chatMoreStr_temp[0]["value"]
+# 是否拼接appid，默认False不拼接，需要拼接请填入True
+chinaUnicomParam_flag = False
+ChinaUnicomParam_flag_temp = get_cookie("ChinaUnicomParam_flag")
+if ChinaUnicomParam_flag_temp != "" and len(ChinaUnicomParam_flag_temp)>0:
+    chinaUnicomParam_flagStr = ChinaUnicomParam_flag_temp[0]["value"]
+    if chinaUnicomParam_flagStr == "True":
+        chinaUnicomParam_flag = True
+# appid和token_online之间的拼接符号，默认使用#
+chatStr = "#"
+ChinaUnicomParam_chatStr_temp = get_cookie("ChinaUnicomParam_chatStr")
+if ChinaUnicomParam_chatStr_temp != "" and len(ChinaUnicomParam_chatStr_temp)>0:
+    chatStr = ChinaUnicomEnvName_temp[0]["value"]
+# 拼接appid是在token_online前面还是后面，1代表前面，2代表后面,默认appid在前面
+appidIndex = 1
+ChinaUnicomParam_appidIndex_temp = get_cookie("ChinaUnicomParam_appidIndex")
+if ChinaUnicomParam_appidIndex_temp != "" and len(ChinaUnicomParam_appidIndex_temp)>0:
+    appidIndex = ChinaUnicomParam_appidIndex_temp[0]["value"]
+
+# 需要提交青龙的联通参数
+dataParam = ""
 
 class RSA_Encrypt:
     def __init__(self, key):
@@ -401,10 +461,11 @@ class UnicomLogin:
         self.deviceId = uuid4().hex
         self.appid = str(random.randint(0, 10))+"f"+str(random.randint(0, 10))+"af"+str(random.randint(0, 10))+str(random.randint(0, 10))+"ad"+str(random.randint(0, 10))+"912d306b5053abf90c7ebbb695887bc870ae0706d573c348539c26c5c0a878641fcc0d3e90acb9be1e6ef858a59af546f3c826988332376b7d18c8ea2398ee3a9c3db947e2471d32a49612"
         self.access_token = ""
-        self.UA = "Mozilla/5.0 (Linux; Android 13; LE2100 Build/TP1A.220905.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/103.0.5060.129 Mobile Safari/537.36; unicom{version:android@10.0100,desmobile:"+self.phone_num+"};devicetype{deviceBrand:OnePlus,deviceModel:LE2100};{yw_code:}"
-
+        self.UA = "Mozilla/5.0 (Linux; Android 13; LE2100 Build/TP1A.220905.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/103.0.5060.129 Mobile Safari/537.36; unicom{version:android@11.0300,desmobile:"+self.phone_num+"};devicetype{deviceBrand:OnePlus,deviceModel:LE2100};{yw_code:}"
+        
 
     def login_unicom(self):
+        global dataParam
         # print_now(self.phone_num+"---------"+self.password)
         headers = {
             'Host': 'm.client.10010.com',
@@ -414,7 +475,7 @@ class UnicomLogin:
             'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
             'Content-Type': 'application/x-www-form-urlencoded',
         }
-        data = f"isFirstInstall=1&simCount=1&yw_code=&deviceOS=android13&mobile={quote(RSA_Encrypt(self.rsa_key).encrypt(self.phone_num, b64=True))}&netWay=Wifi&version=android%4010.0100&deviceId={self.deviceId}&password={quote(RSA_Encrypt(self.rsa_key).encrypt(self.password, b64=True))}&keyVersion=&provinceChanel=general&appId={self.appid}&deviceModel=V1936A&androidId={uuid4().hex[8:24]}&deviceBrand=&timestamp={datetime.today().__format__('%Y%m%d%H%M%S')}"
+        data = f"isFirstInstall=1&simCount=1&yw_code=&deviceOS=android13&mobile={quote(RSA_Encrypt(self.rsa_key).encrypt(self.phone_num, b64=True))}&netWay=Wifi&version=android%4011.0300&deviceId={self.deviceId}&password={quote(RSA_Encrypt(self.rsa_key).encrypt(self.password, b64=True))}&keyVersion=&provinceChanel=general&appId=ChinaunicomMobileBusiness&deviceModel=LE2100&androidId={uuid4().hex[8:24]}&deviceBrand=&timestamp={datetime.today().__format__('%Y%m%d%H%M%S')}"
 
         # data = {
         #     "version": "iphone_c@10.0700",
@@ -427,10 +488,28 @@ class UnicomLogin:
         data = response.json()
         self.ecs_token = data.get("ecs_token")
         self.token_online = data.get("token_online")
-        print_now(f'账号【{self.phone_num}】成功获取到【token_online】：{self.token_online}\n账号【{self.phone_num}】成功获取到【ecs_token】：{self.ecs_token}\n账号【{self.phone_num}】成功获取到【appid】：{self.appid}')
+        if self.token_online == "" or self.token_online is None:
+            print_now(f'账号【{self.phone_num}】获取token_online失败，成功获取到【appid】：{self.appid}')
+        else:
+            print_now(f'账号【{self.phone_num}】成功获取到【token_online】：{self.token_online}\n账号【{self.phone_num}】成功获取到【ecs_token】：{self.ecs_token}\n账号【{self.phone_num}】成功获取到【appid】：{self.appid}')
+
+        # 拼接参数appid
+        if chinaUnicomParam_flag == True or chinaUnicomParam_flag == "True":
+            # 在前
+            if appidIndex == 1:
+                print_now(f'账号【{self.phone_num}】生成appid+token为：\n{self.appId}{chatStr}{self.token_online}')
+                # 使用chatMoreStr拼接
+                dataParam = dataParam+chatMoreStr+self.appid+chatStr+self.token_online;
+            else:
+                # 在后
+                dataParam = dataParam+chatMoreStr+self.token_online+chatStr+self.appid;
+        else:
+            # 使用chatMoreStr拼接
+            dataParam = dataParam+chatMoreStr+self.token_online;
         return self.ecs_token
 
-    # 方式一登录
+
+    # 方式一登录沃畅游
     def get_wo_speed_ticket(self):
         if self.ecs_token == "" or self.ecs_token is None:
             return ""
@@ -582,12 +661,19 @@ class UnicomLogin:
 
     def deal_data(self):
         global msg
+        global IsWoChangYouCK
         if self.access_token == "" or self.access_token is None:
             print_now(f'账号【{self.phone_num}】获取access_token失败')
             msg += f'账号【{self.phone_num}】获取access_token失败\n\n'
             return ""
+        print_now(f'账号【{self.phone_num}】成功获取到【access_token】：{self.access_token}\n请复制保存使用')
+        # 是否填入
+        if IsWoChangYouCK == False or IsWoChangYouCK is None:
+            print_now(f'系统设置不写入access_token至青龙环境')
+            return ""
+        else:
+            print_now(f'系统设置写入access_token至青龙环境,开始写入。。。')
         try:
-            print_now(f'账号【{self.phone_num}】成功获取到【access_token】：{self.access_token}\n请复制保存使用')
             # 获取沃畅游CK
             cklist_temp = get_cookie("WoChangYouCK")
             flag_temp = False
@@ -621,7 +707,7 @@ class UnicomLogin:
             if not flag_temp:
                 post_envs("WoChangYouCK", self.access_token, phone)
                 print_now(f"账号【{self.phone_num}】自动新增access_token至青龙环境：WoChangYouCK  备注为：{phone}")
-                msg += f"账号【{phone}】自动更新access_token至青龙环境：WoChangYouCK  备注为：{phone}\n\n"
+                msg += f"账号【{phone}】自动新增access_token至青龙环境：WoChangYouCK  备注为：{phone}\n\n"
         except Exception as e:
             print_now(f"【{time.strftime('%Y-%m-%d %H:%M:%S')}】 ---- 【{phone}】 登录失败，错误信息：{e}\n")
             msg += f"【{time.strftime('%Y-%m-%d %H:%M:%S')}】 ---- 【{phone}】 登录失败，错误信息：{e}\n\n"
@@ -635,6 +721,58 @@ class UnicomLogin:
         # 方式二登录
         self.wo_speed_login_two()
         self.deal_data()
+
+
+# 将生成的环境变量填入青龙环境中
+def post_data_to_env():
+    global msg
+    global dataParam
+    # 是否填入
+    if IsChinaUnicomParam == False or IsChinaUnicomParam is None:
+        print_now(f'系统设置不写入token_online至青龙环境')
+        return "" 
+    else:
+        print_now(f'系统设置写入token_online至青龙环境,开始写入。。。')
+    # 截取第一位拼接参数
+    dataParam = dataParam[1:]
+    try:
+        # 获取环境CK
+        cklist_temp = get_cookie(envName)
+        flag_temp = False
+        if len(cklist_temp)>0:
+            for i in range(len(cklist_temp)):
+                ck_temp = cklist_temp[i]
+                if ck_temp["remarks"] == "由“联通和沃畅游密码登录”脚本自动生成":
+                    flag_temp = True
+                    put_flag = True
+                    if flag == "old":
+                        _id = ck_temp.get("_id",None)
+                        if not _id:
+                            _id = ck_temp["id"]
+                            put_flag = put_envs_new(_id, ck_temp['name'], dataParam, "由“联通和沃畅游密码登录”脚本自动生成")
+                        else:
+                            put_flag = put_envs_old(_id, ck_temp['name'], dataParam, "由“联通和沃畅游密码登录”脚本自动生成")
+                        # print("进入旧版本青龙禁用方法")
+                        # disable_env(_id)
+                        # delete_env(_id)
+                    elif flag == "new":
+                        put_flag = put_envs_new(ck_temp["id"], ck_temp['name'], dataParam, "由“联通和沃畅游密码登录”脚本自动生成")
+                        # print("进入新版本青龙禁用方法")
+                        # disable_env(ck_temp["id"])
+                        # delete_env(ck_temp["id"])
+                    if put_flag:
+                        print_now(f"已将全部正常执行生成联通参数的账号,自动更新至青龙环境：{envName}  由“联通和沃畅游密码登录”脚本自动生成")
+                        msg += f"已将全部正常执行生成联通参数的账号,自动更新至青龙环境：{envName}  由“联通和沃畅游密码登录”脚本自动生成\n\n"
+                    else:
+                        print_now(f"全部正常执行生成联通参数的账号,自动更新至青龙环境：失败")
+                        msg += f"全部正常执行生成联通参数的账号,自动更新至青龙环境：失败\n\n"
+        if not flag_temp:
+            post_envs(envName, dataParam, "由“联通和沃畅游密码登录”脚本自动生成")
+            print_now(f"已将全部正常执行生成联通参数的账号,自动新增至青龙环境：{envName}  备注为：由“联通和沃畅游密码登录”脚本自动生成")
+            msg += f"已将全部正常执行生成联通参数的账号,自动新增至青龙环境：{envName}  备注为：由“联通和沃畅游密码登录”脚本自动生成\n\n"
+    except Exception as e:
+        print_now(f"【{time.strftime('%Y-%m-%d %H:%M:%S')}】 ---- 联通和沃畅游密码登录脚本生成参数提交青龙失败，错误信息：{e}\n")
+        msg += f"【{time.strftime('%Y-%m-%d %H:%M:%S')}】 ---- 联通和沃畅游密码登录脚本生成参数提交青龙失败，错误信息：{e}\n\n"
 
 
 def start(phone,password):
@@ -702,6 +840,8 @@ if __name__ == "__main__":
             time.sleep(ran_time)
         else:
             print_now("\n\n")
+    # 最后写入联通
+    post_data_to_env()
     if WXPUSHER_TOKEN != "" and WXPUSHER_TOPIC_ID != "" and msg != "":
-        wxpusher("沃畅游密码登录",msg)
+        wxpusher("联通和沃畅游密码登录",msg)
 
