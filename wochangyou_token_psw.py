@@ -371,12 +371,12 @@ msg = ""
 isDebugger = False
 
 # 是否生成沃畅游access_token参数提交至青龙环境，默认True生成，需要不生成请填入False
-IsWoChangYouCK = True
+IsWoChangYouCK = False
 IsWoChangYouCK_temp = get_cookie("IsWoChangYouCK")
 if IsWoChangYouCK_temp != "" and len(IsWoChangYouCK_temp)>0:
     IsWoChangYouCKStr = IsWoChangYouCK_temp[0]["value"]
-    if IsWoChangYouCKStr == "False":
-        IsWoChangYouCK = False
+    if IsWoChangYouCKStr == "True":
+        IsWoChangYouCK = True
 
 # 是否生成联通app参数提交至青龙环境，默认False不生成，需要生成请填入True
 IsChinaUnicomParam = False
@@ -486,11 +486,15 @@ class UnicomLogin:
         # }
         response = requests.post('https://m.client.10010.com/mobileService/login.htm', headers=headers,data=data)
         data = response.json()
+        # print_now(f"{data}")
         self.ecs_token = data.get("ecs_token")
+        if data.get("code") == '4':
+            print_now(f'账号【{self.phone_num}】账号密码错误，跳过')
+            return self.ecs_token
         self.token_online = data.get("token_online")
         if self.token_online == "" or self.token_online is None:
             print_now(f'账号【{self.phone_num}】获取token_online失败，成功获取到【appid】：{self.appid}')
-            return ""
+            return self.ecs_token
         else:
             print_now(f'账号【{self.phone_num}】成功获取到【token_online】：{self.token_online}\n账号【{self.phone_num}】成功获取到【ecs_token】：{self.ecs_token}\n账号【{self.phone_num}】成功获取到【appid】：{self.appid}')
 
@@ -735,7 +739,11 @@ def post_data_to_env():
     else:
         print_now(f'系统设置写入token_online至青龙环境,开始写入。。。')
     # 截取第一位拼接参数
-    dataParam = dataParam[1:]
+    if len(dataParam)>1:
+        dataParam = dataParam[1:]
+    else:
+        print_now(f'未获取到token_online参数')
+        return ""
     try:
         # 获取环境CK
         cklist_temp = get_cookie(envName)
