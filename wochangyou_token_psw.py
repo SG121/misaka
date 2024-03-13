@@ -19,7 +19,7 @@
 下列变量都可选填，请按照自己的需求自行添加环境变量
 联通app参数
 变量名：IsChinaUnicomParam  格式：True或者False 是否生成token_online参数填入环境变量，是下面变量起作用的前提，默认False不生成填入
-变量名：ChinaUnicomEnvName  格式：填指定生成的环境变量名，如chinaUnicomCookie，本脚本默认生成chinaUnicomCookie，用于生成跑拉菲(leaf)联通脚本运行  
+变量名：ChinaUnicomEnvName  格式：填指定生成的环境变量名，如chinaUnicomCookie，本脚本默认生成chinaUnicomCookie，用于生成跑联通脚本运行  
 变量名：ChinaUnicomParam_chatMoreStr    格式：生成的多账号使用的拼接连接符，默认使用&
 变量名：ChinaUnicomParam_flag    格式：是否拼接appid，默认False不拼接，需要拼接请填入True
 变量名：ChinaUnicomParam_chatStr    格式：appid和token_online之间的拼接符号，默认使用#
@@ -470,7 +470,7 @@ class UnicomLogin:
         headers = {
             'Host': 'm.client.10010.com',
             'Accept': '*/*',
-            # 'User-Agent': 'ChinaUnicom.x CFNetwork iOS/15.0.1 unicom{version:iphone_c@10.0700}',
+            # 'User-Agent': 'ChinaUnicom.x CFNetwork iOS/15.0.1 unicom{version:iphone_c@11.0300}',
             'User-Agent': self.UA,
             'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -490,6 +490,7 @@ class UnicomLogin:
         self.token_online = data.get("token_online")
         if self.token_online == "" or self.token_online is None:
             print_now(f'账号【{self.phone_num}】获取token_online失败，成功获取到【appid】：{self.appid}')
+            return ""
         else:
             print_now(f'账号【{self.phone_num}】成功获取到【token_online】：{self.token_online}\n账号【{self.phone_num}】成功获取到【ecs_token】：{self.ecs_token}\n账号【{self.phone_num}】成功获取到【appid】：{self.appid}')
 
