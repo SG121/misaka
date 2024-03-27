@@ -1,3 +1,13 @@
+#!/usr/bin/python3
+# -- coding: utf-8 --
+# -------------------------------
+# @Author : github@yuanter https://github.com/yuanter  修改by院长
+# @Time : 2024/03/28 21:25
+# cron: 30 19 * * *
+# const $ = new Env('简易占卜');
+# -------------------------------
+
+
 import json
 import random
 import time
