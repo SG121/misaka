@@ -550,14 +550,14 @@ def calculate_with_plum_flower():
     print_a_wait_animation("卜上卦：", fake_delay)
     up_base_gua = int(round(time.time() * 1000)) % 8
     up_yao_array = base_gua_to_yao(up_base_gua)
-    print_now(f"上卦获取成功,上卦为:{base_gua_name_map[up_base_gua]}")
+    print_now(f"上卦获取成功,上卦为:{base_gua_name_map[up_base_gua]}\n")
     send_str += f"上卦获取成功,上卦为:{base_gua_name_map[up_base_gua]}\n\n"
     # 起下卦
     print_a_wait_animation("正在获取下卦：", fake_delay)
     down_base_gua = random.randint(0, 999999999999) % 8
     down_yao_array = base_gua_to_yao(down_base_gua)
-    print_now(f"上卦获取成功,下卦为:{base_gua_name_map[down_base_gua]}")
-    send_str += f"上卦获取成功,下卦为:{base_gua_name_map[down_base_gua]}\n"
+    print_now(f"下卦获取成功,下卦为:{base_gua_name_map[down_base_gua]}\n")
+    send_str += f"下卦获取成功,下卦为:{base_gua_name_map[down_base_gua]}\n\n"
     # 组成卦象
     print_a_wait_animation("正在组成本卦：", fake_delay)
     print_now(f"------------------------------------------------本卦------------------------------------------------")
