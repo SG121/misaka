@@ -496,7 +496,7 @@ class UnicomLogin:
             print_now(f'账号【{self.phone_num}】获取token_online失败，成功获取到【appid】：{self.appid}')
             return self.ecs_token
         else:
-            print_now(f'账号【{self.phone_num}】成功获取到【token_online】：{self.token_online}\n账号【{self.phone_num}】成功获取到【ecs_token】：{self.ecs_token}\n账号【{self.phone_num}】成功获取到【appid】：{self.appid}')
+            print_now(f'账号【{self.phone_num}】成功获取到【token_online】：{self.token_online}\n账号【{self.phone_num}】成功获取到【ecs_token】：{self.ecs_token}\n账号【{self.phone_num}】成功获取到【appid】：{self.appid}\n账号【{self.phone_num}】成功获取到【deviceId】：{self.deviceId}')
 
         # 拼接参数appid
         if chinaUnicomParam_flag == True or chinaUnicomParam_flag == "True":
