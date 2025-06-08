@@ -13,7 +13,7 @@
     变量名(必须)： AkCloudCK  格式： 账号&密码
     单个CK塞多个账号时，以#或者换行分隔开：CK1#CK2
 4、请注意，本脚本使用了青龙auth.json文件内部的token，该token具有时效性，3天有效期。需要3天内保持一次登录青龙，保证token有效期，不然脚本会出错
-  可配合自动登录青龙脚本(https://raw.githubusercontent.com/yuanter/misaka/refs/heads/master/login_qinglong.py)，实行自动更新token。安全问题，自行斟酌
+   可配合自动登录青龙脚本(https://raw.githubusercontent.com/yuanter/misaka/refs/heads/master/login_qinglong.py)，实行自动更新token。安全问题，自行斟酌
 wxpusher推送(非必填)
 青龙变量：AkCloudCK_WXPUSHER_TOKEN   wxpusher推送的token
 青龙变量：AkCloudCK_WXPUSHER_TOPIC_ID   wxpusher推送的topicId
