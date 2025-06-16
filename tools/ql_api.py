@@ -1,6 +1,7 @@
 import json, os
 import time
 from sys import stdout
+from datetime import datetime
 
 import requests,re
 
@@ -281,3 +282,214 @@ def enable_env(_id: str) -> bool:
     if j_data['code'] == 200:
         return True
     return False
+
+
+
+# 获取所有的定时任务详情
+def get_crons(name: str = None) -> list:
+    params = {
+        't': int(time.time() * 1000)
+    }
+    if name is not None:
+        params['searchValue'] = name
+    res = requests.get(ql_url + '/api/crons', headers=__get__headers(), params=params)
+    j_data = res.json()
+    if j_data['code'] == 200:
+        if flag == 'old':
+            return j_data['data']
+        else:
+            return j_data['data']['data']
+    return []
+
+# 获取指定定时任务详情
+def get_crons_by_id(_id: str) -> list:
+    # 统一返回队列类型
+    result = []
+    params = {
+        't': int(time.time() * 1000)
+    }
+    res = requests.get(ql_url + f'/api/crons/{_id}', headers=__get__headers(), params=params)
+    j_data = res.json()
+    if j_data['code'] == 200:
+        return result.append(j_data['data'])
+    return []
+
+
+# 新增任务
+def post_crons( name: str, labels: str, command: str, schedule: str) -> bool:
+    params = {
+        't': int(time.time() * 1000)
+    }
+    data = {
+        'labels': labels,
+        'command': command,
+        'schedule': schedule,
+        'name': name
+    }
+    if flag == 'old':
+       data = {
+        'labels': labels,
+        'command': command,
+        'schedule': schedule,
+        'name': name
+        } 
+    res = requests.post(ql_url + '/api/crons', headers=__get__headers(), params=params, json=data)
+    j_data = res.json()
+    if j_data['code'] == 200:
+        return True
+    return False
+
+# 更新任务
+def put_crons(_id: str, name: str, labels: str, command: str, schedule: str) -> bool:
+    params = {
+        't': int(time.time() * 1000)
+    }
+    data = {
+        'labels': labels,
+        'command': command,
+        'schedule': schedule,
+        'name': name,
+        'id': _id
+    }
+    if flag == 'old':
+       data = {
+        'labels': labels,
+        'command': command,
+        'schedule': schedule,
+        'name': name,
+        '_id': _id
+        } 
+    res = requests.put(ql_url + '/api/crons', headers=__get__headers(), params=params, json=data)
+    j_data = res.json()
+    if j_data['code'] == 200:
+        return True
+    return False
+
+# 禁用任务
+def disable_crons(_id: str) -> bool:
+    params = {
+        't': int(time.time() * 1000)
+    }
+    data = [_id]
+    res = requests.put(ql_url + '/api/crons/disable', headers=__get__headers(), params=params, json=data)
+    j_data = res.json()
+    if j_data['code'] == 200:
+        return True
+    return False
+
+
+# 启用任务
+def enable_crons(_id: str) -> bool:
+    params = {
+        't': int(time.time() * 1000)
+    }
+    data = [_id]
+    res = requests.put(ql_url + '/api/crons/enable', headers=__get__headers(), params=params, json=data)
+    j_data = res.json()
+    if j_data['code'] == 200:
+        return True
+    return False
+
+# 删除任务
+def delete_crons(_id: str) -> bool:
+    params = {
+        't': int(time.time() * 1000)
+    }
+    data = [_id]
+    res = requests.delete(ql_url + '/api/crons', headers=__get__headers(), params=params, json=data)
+    j_data = res.json()
+    if j_data['code'] == 200:
+        return True
+    return False
+
+# 运行任务
+def run_crons(_id: str) -> bool:
+    params = {
+        't': int(time.time() * 1000)
+    }
+    data = [_id]
+    res = requests.put(ql_url + '/api/crons/run', headers=__get__headers(), params=params, json=data)
+    j_data = res.json()
+    if j_data['code'] == 200:
+        return True
+    return False
+
+# 停止任务
+def stop_crons(_id: str) -> bool:
+    params = {
+        't': int(time.time() * 1000)
+    }
+    data = [_id]
+    res = requests.put(ql_url + '/api/crons/stop', headers=__get__headers(), params=params, json=data)
+    j_data = res.json()
+    if j_data['code'] == 200:
+        return True
+    return False
+
+# 获取指定任务的日志详情
+def get_crons_log(_id: str) -> str:
+    params = {
+        't': int(time.time() * 1000)
+    }
+    res = requests.get(ql_url + f'/api/crons/{_id}/log', headers=__get__headers(), params=params)
+    j_data = res.json()
+    if j_data['code'] == 200:
+        return j_data['data']
+    return ""
+
+# 随机生成比当前时间小的定时任务规则
+def generate_past_cron():
+    现在 = datetime.now()
+    current_hour = now.hour
+    current_minute = now.minute
+    
+    # 处理无法生成的情况（当前时间为00:00）
+    if current_hour == 0 and current_minute == 0:
+        return "16 23 * * *"  # 默认返回前一天23:16
+    
+    # 计算当前时间的总分钟数
+    total_minutes = current_hour * 60 + current_minute
+    
+    # 随机生成过去的时间点（0到总分钟数-1之间）
+    random_minutes = random.randint(0, total_minutes - 1)
+    random_hour = random_minutes // 60
+    random_minute = random_minutes % 60
+
+    current_time = datetime.now().strftime("%H:%M")
+    print(f"当前时间: {current_time}")
+    print(f"生成新的Cron表达式: {random_minute} {random_hour} * * *")
+    print(f"含义: 每天 {random_hour}:{random_minute:02d} 执行")
+
+    # 格式化为cron表达式
+    return f"{random_minute} {random_hour} * * *"
+
+
+# 根据当前文件随机改变定时任务时间
+def random_time():
+    print_now("执行更改定时任务表达式")
+    cron_details = None
+    script_path = os.path.abspath(__file__)  # 转为绝对路径
+    # print_now(f"脚本绝对路径: {script_path}")    # 示例脚本绝对路径: /ql/data/scripts/yuanter_hw/akilecloud_checkin.py
+    # script_name = os.path.basename(script_path)     # 文件名: main.py
+    # 获取所有任务的脚本路径
+    crons_data = get_crons()
+    
+    for i in range(len(crons_data)): 
+        
+        script_path_temp = crons_data[i].get("command").split(" ")[1]
+        if script_path_temp in script_path:
+            # 获取当前的任务详情
+            cron_details = crons_data[i]
+            if cron_details is not None:
+                _id = None
+                if flag == 'new':
+                    _id = cron_details["id"]
+                else:
+                    _id = cron_details["_id"]
+                schedule = generate_past_cron()
+                # 修改任务
+                if put_crons(_id, cron_details["name"], cron_details["labels"], cron_details["command"], schedule):
+                    print_now(f"生成新的定时任务成功。旧表达式：{cron_details['schedule']} ，新的表达式：{schedule}")
+            # 结束
+            break
+    
