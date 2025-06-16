@@ -25,7 +25,30 @@ from sys import stdout
 import random
 import cloudscraper
 from datetime import datetime
+import logging
+import sys
 
+
+# 加载通知
+def load_send() -> None:
+    logging.info("加载推送功能中...")
+    global send
+    send = None
+    cur_path = os.path.abspath(os.path.dirname(__file__))
+    sys.path.append(cur_path)
+    if os.path.exists(cur_path + "/../notify.py"):
+        try:
+            from notify import send
+        except Exception:
+            send = None
+            logging.info(f"❌加载通知服务失败!!!\n{traceback.format_exc()}")
+    else:
+        try:
+            from notify import send
+        except:
+            logging.info(f"❌加载通知服务失败!!!\n")
+            print("无法检测到本库中的 notify 依赖，退出程序")
+            exit(0)
 
 
 WXPUSHER_TOKEN = '' # wxpusher推送的token
@@ -583,6 +606,9 @@ def random_time():
 
 
 if __name__ == "__main__":
+    # 加载通知
+    load_send()
+
     l = []
     ck_list = []
     cklist = get_cookie("AkCloudCK")
@@ -645,4 +671,5 @@ if __name__ == "__main__":
     if WXPUSHER_TOKEN != "" and WXPUSHER_TOPIC_ID != "" and msg != "":
         wxpusher("AkileCloud签到",msg)
     random_time()
+    send('AkileCloud签到', msg)
 
