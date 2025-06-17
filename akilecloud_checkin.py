@@ -567,7 +567,7 @@ def getup(ck,token):
     sign_data = sign_in(token)
     if sign_data['status_code'] == 0:
         print_now(f"备注：{remarks}，用户名：{user_info['data']['username']}，签到状态：{sign_data['status_msg']}，账户总AK币：{sign_data['data']}，本次签到获得AK币：{sign_data['data']-index_info['data']['ak_coin']}")
-        msg += f"【{time.strftime('%Y-%m-%d %H:%M:%S')}】 ---- 【{remarks}】，用户名：{user_info['data']['username']}，签到前AK币：{index_info['data']['ak_coin']}----------签到后Ak币：{sign_data['data']}，本次签到获得AK币：{sign_data['data']}，本次签到获得AK币：{sign_data['data']-index_info['data']['ak_coin']}\n\n"
+        msg += f"【{time.strftime('%Y-%m-%d %H:%M:%S')}】 ---- 【{remarks}】，用户名：{user_info['data']['username']}，签到前AK币：{index_info['data']['ak_coin']}----------签到后Ak币：{sign_data['data']}，本次签到获得AK币：{sign_data['data']-index_info['data']['ak_coin']}\n\n"
     else:
         print_now(f"【{remarks}】，用户名：{user_info['data']['username']}，总Ak币：{index_info['data']['ak_coin']}----------{sign_data['status_msg']}")
         msg += f"【{time.strftime('%Y-%m-%d %H:%M:%S')}】 ---- 【{remarks}】，用户名：{user_info['data']['username']}，总Ak币：{index_info['data']['ak_coin']}----------{sign_data['status_msg']}\n\n"
