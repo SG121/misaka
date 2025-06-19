@@ -594,17 +594,15 @@ def getup(ck,token):
     # 预先签到
     sign_data = sign_in(token)
     # 获取签到状态
-    sign_status_data = sign_status(token)
+    # sign_status_data = sign_status(token)
     # 获取签到积分
     jifen = get_sign_jifen(token)
-    # 最后查一下总积分
-    last_info = get_index(token)
-    if sign_data['code'] == 200 and sign_status_data['code']:
-        print_now(f"备注：{remarks}，用户名：{user_info['data']['username']}，签到状态：{sign_data['msg']}，账户总AK币：{last_info['data']['ak_coin']}，本次签到获得AK币：{jifen['jifen']}")
-        msg += f"【{time.strftime('%Y-%m-%d %H:%M:%S')}】 ---- 【{remarks}】，用户名：{user_info['data']['username']}，签到前AK币：{index_info['data']['ak_coin']}----------签到后Ak币：{last_info['data']['ak_coin']}，本次签到获得AK币：{jifen}\n\n"
+    if sign_data['code'] == 200:
+        print_now(f"备注：{remarks}，用户名：{user_info['data']['username']}，签到状态：{sign_data['msg']}，账户总AK币：{jifen['data']['jifen']}，本次签到获得AK币：{jifen['data']['jifen']-index_info['data']['ak_coin']}")
+        msg += f"【{time.strftime('%Y-%m-%d %H:%M:%S')}】 ---- 【{remarks}】，用户名：{user_info['data']['username']}，签到前AK币：{index_info['data']['ak_coin']}----------签到后Ak币：{jifen['data']['jifen']}，本次签到获得AK币：{jifen['data']['jifen']-index_info['data']['ak_coin']}\n\n"
     else:
         print_now(f"【{remarks}】，用户名：{user_info['data']['username']}，总Ak币：{index_info['data']['ak_coin']}----------{sign_data['msg']}")
-        msg += f"【{time.strftime('%Y-%m-%d %H:%M:%S')}】 ---- 【{remarks}】，用户名：{user_info['data']['username']}，总Ak币：{last_info['data']['ak_coin']}----------{sign_data['msg']}\n\n"
+        msg += f"【{time.strftime('%Y-%m-%d %H:%M:%S')}】 ---- 【{remarks}】，用户名：{user_info['data']['username']}，总Ak币：{jifen['data']['jifen']}----------{sign_data['msg']}\n\n"
 
 
 # 根据当前文件随机改变定时任务时间
