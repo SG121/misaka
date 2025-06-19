@@ -7,7 +7,7 @@
 # -------------------------------
 
 """
-1. AkileCloud签到 支持多账号执行 脚本仅供学习交流使用, 请在下载后24h内删除
+1. AcckCloud签到 支持多账号执行 脚本仅供学习交流使用, 请在下载后24h内删除
 2. 网址：https://acck.io/register?aff_code=2306b7b3-b73f-4a0c-9960-2e6a4719caa6  本脚本需要使用账号密码，请记得设置密码（注意：本脚本使用了&、#和@3个符号，更改密码无需使用这3个符号）
 3. 环境变量说明:
     变量名(必须)： AcckCloudCK  格式： 账号&密码
@@ -600,7 +600,7 @@ def getup(ck,token):
     # 最后查一下总积分
     last_info = get_index(token)
     if sign_data['code'] == 200 and sign_status_data['code']:
-        print_now(f"备注：{remarks}，用户名：{user_info['data']['username']}，签到状态：{sign_data['msg']}，账户总AK币：{sign_data['data']}，本次签到获得AK币：{jifen}")
+        print_now(f"备注：{remarks}，用户名：{user_info['data']['username']}，签到状态：{sign_data['msg']}，账户总AK币：{last_info['data']['ak_coin']}，本次签到获得AK币：{jifen['jifen']}")
         msg += f"【{time.strftime('%Y-%m-%d %H:%M:%S')}】 ---- 【{remarks}】，用户名：{user_info['data']['username']}，签到前AK币：{index_info['data']['ak_coin']}----------签到后Ak币：{last_info['data']['ak_coin']}，本次签到获得AK币：{jifen}\n\n"
     else:
         print_now(f"【{remarks}】，用户名：{user_info['data']['username']}，总Ak币：{index_info['data']['ak_coin']}----------{sign_data['msg']}")
