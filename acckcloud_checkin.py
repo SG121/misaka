@@ -420,14 +420,14 @@ def generate_past_cron():
 
 
 # WXPUSHER_TOKEN
-WoChangYouCK_WXPUSHER_TOKEN_temp = get_cookie("AkCloudCK_WXPUSHER_TOKEN")
-if WoChangYouCK_WXPUSHER_TOKEN_temp != "" and len(WoChangYouCK_WXPUSHER_TOKEN_temp)>0:
-    WXPUSHER_TOKEN = WoChangYouCK_WXPUSHER_TOKEN_temp[0]["value"]
+WXPUSHER_TOKEN_temp = get_cookie("AcckCloudCK_WXPUSHER_TOKEN")
+if WXPUSHER_TOKEN_temp != "" and len(WXPUSHER_TOKEN_temp)>0:
+    WXPUSHER_TOKEN = WXPUSHER_TOKEN_temp[0]["value"]
 
 # WXPUSHER_TOPIC_ID
-WoChangYouCK_WXPUSHER_TOPIC_ID_temp = get_cookie("AkCloudCK_WXPUSHER_TOPIC_ID")
-if WoChangYouCK_WXPUSHER_TOPIC_ID_temp != "" and len(WoChangYouCK_WXPUSHER_TOPIC_ID_temp)>0:
-    WXPUSHER_TOPIC_ID = WoChangYouCK_WXPUSHER_TOPIC_ID_temp[0]["value"]
+WXPUSHER_TOPIC_ID_temp = get_cookie("AcckCloudCK_WXPUSHER_TOPIC_ID")
+if WXPUSHER_TOPIC_ID_temp != "" and len(WXPUSHER_TOPIC_ID_temp)>0:
+    WXPUSHER_TOPIC_ID = WXPUSHER_TOPIC_ID_temp[0]["value"]
 
 msg = ""
 
@@ -701,7 +701,7 @@ if __name__ == "__main__":
         getup(ck,token)
         print_now("\n")
     if WXPUSHER_TOKEN != "" and WXPUSHER_TOPIC_ID != "" and msg != "":
-        wxpusher("AkileCloud签到",msg)
+        wxpusher("AcckCloudCK签到",msg)
     random_time()
-    send('AkileCloud签到', msg)
+    send('AcckCloudCK签到', msg)
 
