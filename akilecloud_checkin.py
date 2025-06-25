@@ -420,14 +420,14 @@ def generate_past_cron():
 
 
 # WXPUSHER_TOKEN
-WoChangYouCK_WXPUSHER_TOKEN_temp = get_cookie("AkCloudCK_WXPUSHER_TOKEN")
-if WoChangYouCK_WXPUSHER_TOKEN_temp != "" and len(WoChangYouCK_WXPUSHER_TOKEN_temp)>0:
-    WXPUSHER_TOKEN = WoChangYouCK_WXPUSHER_TOKEN_temp[0]["value"]
+WXPUSHER_TOKEN_temp = get_cookie("AkCloudCK_WXPUSHER_TOKEN")
+if WXPUSHER_TOKEN_temp != "" and len(WXPUSHER_TOKEN_temp)>0:
+    WXPUSHER_TOKEN = WXPUSHER_TOKEN_temp[0]["value"]
 
 # WXPUSHER_TOPIC_ID
-WoChangYouCK_WXPUSHER_TOPIC_ID_temp = get_cookie("AkCloudCK_WXPUSHER_TOPIC_ID")
-if WoChangYouCK_WXPUSHER_TOPIC_ID_temp != "" and len(WoChangYouCK_WXPUSHER_TOPIC_ID_temp)>0:
-    WXPUSHER_TOPIC_ID = WoChangYouCK_WXPUSHER_TOPIC_ID_temp[0]["value"]
+WXPUSHER_TOPIC_ID_temp = get_cookie("AkCloudCK_WXPUSHER_TOPIC_ID")
+if WXPUSHER_TOPIC_ID_temp != "" and len(WXPUSHER_TOPIC_ID_temp)>0:
+    WXPUSHER_TOPIC_ID = WXPUSHER_TOPIC_ID_temp[0]["value"]
 
 msg = ""
 
