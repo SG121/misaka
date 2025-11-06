@@ -14,6 +14,9 @@
     单个CK塞多个账号时，以#或者换行分隔开：CK1#CK2
 4、请注意，本脚本使用了青龙auth.json文件内部的token，该token具有时效性，3天有效期。需要3天内保持一次登录青龙，保证token有效期，不然脚本会出错
    可配合自动登录青龙脚本(https://raw.githubusercontent.com/yuanter/misaka/refs/heads/master/login_qinglong.py)，实行自动更新token。安全问题，自行斟酌
+wxpusher推送(非必填)
+青龙变量：AkCloudCK_WXPUSHER_TOKEN   wxpusher推送的token
+青龙变量：AkCloudCK_WXPUSHER_TOPIC_ID   wxpusher推送的topicId
 """
 import requests,re
 import json, os
@@ -46,6 +49,49 @@ def load_send() -> None:
             logging.info(f"❌加载通知服务失败!!!\n")
             print("无法检测到本库中的 notify 依赖，退出程序")
             exit(0)
+
+
+WXPUSHER_TOKEN = '' # wxpusher推送的token
+WXPUSHER_TOPIC_ID = '' # wxpusher推送的topicId
+WXPUSHER_CONTENT_TYPE = 2  # wxpusher推送的样式，1表示文字  2表示html(只发送body标签内部的数据即可，不包括body标签)，默认为2
+# wxpusher消息推送
+def wxpusher(title: str, content: str) -> None:
+    """
+    使用微信的wxpusher推送
+    """
+    if not WXPUSHER_TOKEN or not WXPUSHER_TOPIC_ID:
+        print("wxpusher 服务的 token 或者 topicId 未设置!!\n取消推送")
+        return
+    print("wxpusher 服务启动")
+
+    url = f"https://wxpusher.zjiecode.com/api/send/message"
+    headers = {"Content-Type": "application/json;charset=utf-8"}
+    contentType = 2
+    if not WXPUSHER_CONTENT_TYPE:
+        contentType = 2
+    else:
+        contentType = WXPUSHER_CONTENT_TYPE
+    if contentType == 2:
+        content = content.replace("\n", "<br/>")
+    data = {
+        "appToken":f"{WXPUSHER_TOKEN}",
+        "content":f"{content}",
+        "summary":f"{title}",
+        "contentType":contentType,
+        "topicIds":[
+            f'{WXPUSHER_TOPIC_ID}'
+        ],
+        "verifyPay":False
+    }
+    response = requests.post(
+        url=url, data=json.dumps(data), headers=headers, timeout=15
+    ).json()
+
+    if response["code"] == 1000:
+        print("wxpusher推送成功！")
+    else:
+        print("wxpusher推送失败！")
+        print(f"wxpusher推送出错响应内容：{response}" )
 
 
 ql_auth_path = '/ql/data/config/auth.json'
@@ -333,7 +379,6 @@ def put_crons(_id: str, name: str, labels: str, command: str, schedule: str) -> 
     }
     if flag == 'old':
        data = {
-        'labels': labels,
         'command': command,
         'schedule': schedule,
         'name': name,
@@ -373,6 +418,15 @@ def generate_past_cron():
 
 
 
+# WXPUSHER_TOKEN
+WXPUSHER_TOKEN_temp = get_cookie("AkCloudCK_WXPUSHER_TOKEN")
+if WXPUSHER_TOKEN_temp != "" and len(WXPUSHER_TOKEN_temp)>0:
+    WXPUSHER_TOKEN = WXPUSHER_TOKEN_temp[0]["value"]
+
+# WXPUSHER_TOPIC_ID
+WXPUSHER_TOPIC_ID_temp = get_cookie("AkCloudCK_WXPUSHER_TOPIC_ID")
+if WXPUSHER_TOPIC_ID_temp != "" and len(WXPUSHER_TOPIC_ID_temp)>0:
+    WXPUSHER_TOPIC_ID = WXPUSHER_TOPIC_ID_temp[0]["value"]
 
 msg = ""
 
@@ -542,8 +596,10 @@ def random_time():
                     _id = cron_details["_id"]
                 schedule = generate_past_cron()
                 # 修改任务
-                if put_crons(_id, cron_details["name"], cron_details["labels"], cron_details["command"], schedule):
+                if put_crons(_id, cron_details.get("name"), cron_details.get("labels"), cron_details.get("command"), schedule):
                     print_now(f"生成新的定时任务成功。旧表达式：{cron_details['schedule']} ，新的表达式：{schedule}")
+                else:
+                    print_now(f'生成新的定时任务出错了')
             # 结束
             break
     
@@ -613,6 +669,8 @@ if __name__ == "__main__":
             continue
         getup(ck,token)
         print_now("\n")
+    if WXPUSHER_TOKEN != "" and WXPUSHER_TOPIC_ID != "" and msg != "":
+        wxpusher("AkileCloud签到",msg)
     random_time()
     send('AkileCloud签到', msg)
 
