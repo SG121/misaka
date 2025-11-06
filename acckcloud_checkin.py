@@ -379,7 +379,6 @@ def put_crons(_id: str, name: str, labels: str, command: str, schedule: str) -> 
     }
     if flag == 'old':
        data = {
-        'labels': labels,
         'command': command,
         'schedule': schedule,
         'name': name,
@@ -629,8 +628,10 @@ def random_time():
                     _id = cron_details["_id"]
                 schedule = generate_past_cron()
                 # 修改任务
-                if put_crons(_id, cron_details["name"], cron_details["labels"], cron_details["command"], schedule):
+                if put_crons(_id, cron_details.get("name"), cron_details.get("labels"), cron_details.get("command"), schedule):
                     print_now(f"生成新的定时任务成功。旧表达式：{cron_details['schedule']} ，新的表达式：{schedule}")
+                else:
+                    print_now(f'生成新的定时任务出错了')
             # 结束
             break
     
